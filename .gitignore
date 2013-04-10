@@ -1,0 +1,12 @@
+# Node
+npm-debug.log
+node_modules
+lib-cov
+
+# MacOSX
+.DS_Store
+
+# General
+*.pid
+*.gz
+*.log

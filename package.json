@@ -1,0 +1,15 @@
+{
+  "name": "procserver",
+  "version": "0.1.0",
+  "description": "The proserver is inspired by heroku a deployment mechanism and is designed for rubynas",
+  "author": "Vincent Landgraf <setcool@gmx.de>",
+  "dependencies": {
+    "express": "3.1.x",
+    "bouncy": "3.1.x",
+    "send": "0.1.x"
+  },
+  "engines": {
+    "node": ">= 0.6"
+  },
+  "license": "MIT"
+}

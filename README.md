@@ -171,7 +171,7 @@ This request accepts the same input as the *Add new application* request. After 
 
 * [http://expressjs.com/](http://expressjs.com/) for the api requests
 * [https://github.com/substack/bouncy](https://github.com/substack/bouncy) for proxying
-* [https://github.com/felixge/node-paperboy](https://github.com/felixge/node-paperboy) for static content hosting
+* [https://github.com/visionmedia/send](https://github.com/visionmedia/send) for static content hosting
 
 ## Acknowledgements
 

@@ -10,9 +10,11 @@
   },
   "devDependencies" : {
     "coffee-script" : "1.1.x",
-    "nodeunit" : "0.6.x"
+    "nodeunit" : "0.6.x",
+    "temporary" : "0.0.5"
   },
   "scripts": {
+    "pretest": "cake pretest",
     "test": "cake test"
   },
   "engines": {

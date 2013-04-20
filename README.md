@@ -112,8 +112,7 @@ This request will:
 
 1. Install the required pakages using `apt-get`on ubuntu
 2. Clone the git repository (git pull/clone) and start the application
-2. Execute the install hook 
-3. Execute the post install hook
+3. Execute the install commands
 4. Run (execute procfile)
 
 Limitation: The application has no write access to the file system in the checkout folder.

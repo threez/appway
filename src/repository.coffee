@@ -3,7 +3,7 @@
 fs = require 'fs'
 
 class Repository extends EventEmitter
-  constructor: (@config) ->
+  constructor: (@config, @logger) ->
     @url = @config.url
     @branch = @config.branch
     @dir = @config.dir
@@ -22,12 +22,7 @@ class Repository extends EventEmitter
   pull: ->
     process = spawn 'env', @pullArgs(),
       cwd: @dir
-    # TODO: add output of cloning to install log
-    # process.stdout.on 'data', (data) ->
-    #   console.log 'stdout: ' + data
-    # 
-    # process.stderr.on 'data', (data) ->
-    #   console.log 'stderr: ' + data
+    @useLogger process
     
     process.on 'close', (code) =>
       if code == 0
@@ -37,13 +32,7 @@ class Repository extends EventEmitter
     
   clone: ->
     process = spawn 'env', @cloneArgs()
-    
-    # TODO: add output of cloning to install log
-    # process.stdout.on 'data', (data) ->
-    #   console.log 'stdout: ' + data
-    # 
-    # process.stderr.on 'data', (data) ->
-    #   console.log 'stderr: ' + data
+    @useLogger process
     
     process.on 'close', (code) =>
       if code == 0
@@ -63,5 +52,11 @@ class Repository extends EventEmitter
     args.push @url
     args.push @dir
     args
-  
+
+  useLogger: (process) ->
+    process.stdout.on 'data', (data) =>
+      @logger.info data.toString()
+    process.stderr.on 'data', (data) =>
+      @logger.error data.toString()
+
 exports.Repository = Repository

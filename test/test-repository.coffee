@@ -4,10 +4,14 @@ fs = require 'fs'
 
 repo = (callback) ->
   tmpdir = new Tempdir
-  callback new Repository(
+  config =
     url: "git://github.com/rubynas/rubynas.git"
     branch: "master"
-    dir: tmpdir.path), tmpdir.path
+    dir: tmpdir.path
+  logger =
+    info: (data) ->
+    error: (data) ->
+  callback new Repository(config, logger), tmpdir.path
   tmpdir.rmdir()
 
 exports.testConfigruation = (test) ->

@@ -1,8 +1,13 @@
 {spawn} = require 'child_process'
 
-task 'pretest', "Build CoffeeScript source files", ->
+task 'compile', "Build CoffeeScript source files", ->
   coffee = spawn 'coffee', ['-c', '-o', 'lib', 'src']
   coffee.stdout.on 'data', (data) -> process.stderr.write data.toString()
+
+task 'server', "Build CoffeeScript source files", ->
+  coffee = spawn 'node', ['./bin/procserver']
+  coffee.stdout.on 'data', (data) -> process.stdout.write data.toString()
+  coffee.stderr.on 'data', (data) -> process.stderr.write data.toString()
   
 task 'test', "Run test suite", ->
   process.chdir __dirname

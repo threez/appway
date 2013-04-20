@@ -14,7 +14,8 @@
     "temporary" : "0.0.5"
   },
   "scripts": {
-    "pretest": "cake pretest",
+    "server": "cake server",
+    "compile": "cake compile",
     "test": "cake test"
   },
   "engines": {

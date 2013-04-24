@@ -3,7 +3,6 @@
 app = () ->
   new Application
     name: "rubynas"
-    env: "bundler"
     repo:
       url: "git://github.com/rubynas/rubynas.git"
       branch: "master"

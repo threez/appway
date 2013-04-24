@@ -1,4 +1,4 @@
-{AppProcess} = require('../src/app-process')
+{AppProcess} = require '../src/app-process'
 
 proc = () -> new AppProcess('web', 'bundle exec daemon.rb')
 

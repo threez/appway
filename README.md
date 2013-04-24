@@ -50,7 +50,6 @@ Content:
 
     {
       name: "rubynas",
-      env: "bundler",
       repo: {
         url: "git://github.com/rubynas/rubynas.git",
         branch: "master"
@@ -97,13 +96,12 @@ Content:
 Parts of the request:
 
 * **name**: The name with that the application will be referenced later
-* **env** (optional): If `bundler` is passed, it will modifiy the environment to enable gems and commands provided by bunlder
 * **repo**: The location of the git repository
   * **url**: The path to a git repository
   * **branch** (optional): The branch to checkout (default master)
 * **packages**: Required packages (e.g. on ubuntu debian) that need to be installed before
 * **user**: The user under which the application should be started
-* **group**: The group under whicht the application should be started
+* **group**: The group under which the application should be started
 * **domain**: A list of regular expressions that declare, under which requests the application should respond.
 * **install** (optional): A list of commands that should be executed to prepare the application start.
 * **scale** (optional): A list of profile processes and there scaling factor.

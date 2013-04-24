@@ -1,4 +1,4 @@
-{Procfile} = require('../src/procfile')
+{Procfile} = require '../src/procfile'
 
 exports.testParsing = (test) ->
   test.expect 1

@@ -15,7 +15,7 @@
     "temporary" : "0.0.5"
   },
   "scripts": {
-    "server": "cake server",
+    "start": "cake server",
     "compile": "cake compile",
     "test": "cake test"
   },

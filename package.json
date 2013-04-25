@@ -8,7 +8,7 @@
     "bouncy": "3.1.x",
     "send": "0.1.x",
     "winston": "0.6.x",
-    "hashish": "0.0.x"
+    "dirty": "0.9.x"
   },
   "devDependencies" : {
     "coffee-script" : "1.1.x",

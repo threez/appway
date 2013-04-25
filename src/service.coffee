@@ -1,36 +1,43 @@
 {EventEmitter} = require 'events'
-Hash = require 'hashish'
+{Application} = require './application'
+{Dirty} = require 'dirty'
 
 class Service extends EventEmitter
-  constructor: () ->
-    @applications = {}
+  constructor: (@db_path) ->
+    @dirty = new Dirty(@db_path)
   
   list:->
-    Hash(@applications).values
+    apps = []
+    @dirty.forEach (key, value) -> apps.push(value)
+    apps
   
   create: (app_manifest) ->
     unless @hasApplication(app_manifest.name)
-      @applications[app_manifest.name] = app_manifest
+      @dirty.set(app_manifest.name, app_manifest)
       true
     else
       false
   
   update: (name, app_manifest) ->
-    if @applications[name]
-      @applications[name] = app_manifest
+    if @hasApplication(name)
+      @dirty.set(name, app_manifest)
       true
     else
       false
 
   destroy: (name) ->
-    if @applications[name]
-      delete @applications[name]
+    if @hasApplication(name)
+      @dirty.set(name, undefined)
       true
     else
       false
 
-  find:(name) ->
-    @applications[name]
+  find: (name) ->
+    @dirty.get(name)
+
+  app: (name) ->
+    if manifest = @find(name)
+      new Application(manifest)
 
   hasApplication: (name) ->
     @find(name) != undefined

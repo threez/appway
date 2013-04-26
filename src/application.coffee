@@ -1,4 +1,6 @@
 {EventEmitter} = require 'events'
+{Repository} = require './repository'
+winston = require 'winston'
 
 class Application extends EventEmitter
   constructor: (@manifest) ->
@@ -22,5 +24,20 @@ class Application extends EventEmitter
   stop: () ->
 
   log: (name) ->
+  # Returns the path to the log with the passed name
+  # @param [String] context the name might be install, process, error
+  log: (context) ->
+    @manifest.logs[context]
+
+  # Returns the logger object to use for context to use.
+  logger: (context) ->
+    if logger = @loggers[context]
+      logger
+    else
+      @loggers[context] = new winston.Logger
+        transports: [
+          new winston.transports.Console(),
+          new winston.transports.File(filename: @log(context))
+        ]
 
 exports.Application = Application

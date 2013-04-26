@@ -4,7 +4,7 @@ send = require 'send'
 
 class Api
   constructor: () ->
-    @service = new Service("./app.db")
+    @service = new Service("./app.db", "./apps")
     @app = express()
 
     @app.use(express.logger('dev')) # 'default', 'short', 'tiny', 'dev'

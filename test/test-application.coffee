@@ -6,6 +6,7 @@ app = () ->
     repo:
       url: "git://github.com/rubynas/rubynas.git"
       branch: "master"
+      dir: "test/apps/rubynas/app"
     packages: [
       "ruby1.9.3"
       "ruby-bundler"
@@ -42,6 +43,10 @@ app = () ->
     ]
     scale:
       web: 2
+    logs:
+      install: 'test/apps/rubynas/logs/install'
+      process: 'test/apps/rubynas/logs/process'
+      error: 'test/apps/rubynas/logs/error'
 
 exports.testApplication = (test) ->
   application = app()

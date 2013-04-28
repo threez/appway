@@ -1,6 +1,7 @@
 {EventEmitter} = require 'events'
 {spawn} = require 'child_process'
 fs = require 'fs'
+path = require 'path'
 
 class Repository extends EventEmitter
   constructor: (@config, @logger) ->
@@ -12,33 +13,36 @@ class Repository extends EventEmitter
     @on 'pulled', => @emit 'synced'
     @on 'cloned', => @emit 'synced'
     
-  sync: ->
+  sync: (callback) ->
     fs.exists @git_path, (exists) =>
       if exists
-        @pull()
+        @pull callback
       else
-        @clone()
+        @clone callback
     
-  pull: ->
-    process = spawn 'env', @pullArgs(),
-      cwd: @dir
+  pull: (callback) ->
+    process = spawn 'env', @pullArgs(), cwd: @dir
     @useLogger process
     
     process.on 'close', (code) =>
       if code == 0
         @emit 'pulled'
+        callback(undefined, this) if callback
       else
         @emit 'error', code
+        callback('unable to pull', this) if callback
     
-  clone: ->
+  clone: (callback) ->
     process = spawn 'env', @cloneArgs()
     @useLogger process
     
     process.on 'close', (code) =>
       if code == 0
         @emit 'cloned'
+        callback(undefined, this) if callback
       else
         @emit 'error', code
+        callback('unable to clone', this) if callback
   
   pullArgs: ->
     args = ['git', 'pull']

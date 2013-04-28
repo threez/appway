@@ -1,4 +1,5 @@
 {Application} = require '../src/application'
+{Service} = require '../src/service'
 
 app = () ->
   new Application
@@ -6,7 +7,6 @@ app = () ->
     repo:
       url: "git://github.com/rubynas/rubynas.git"
       branch: "master"
-      dir: "test/apps/rubynas/app"
     packages: [
       "ruby1.9.3"
       "ruby-bundler"
@@ -43,10 +43,10 @@ app = () ->
     ]
     scale:
       web: 2
-    logs:
-      install: 'test/apps/rubynas/logs/install'
-      process: 'test/apps/rubynas/logs/process'
-      error: 'test/apps/rubynas/logs/error'
+
+appFromService = (callback) ->
+  service = new Service('./test/app.db', './test/apps')
+  service.create app(), callback
 
 exports.testApplication = (test) ->
   application = app()
@@ -71,3 +71,13 @@ exports.testStart = (test) ->
   application = app()
   application.on 'started', -> test.done()
   application.start()
+
+exports.testStop = (test) ->
+  application = app()
+  application.on 'stopped', -> test.done()
+  application.stop()
+
+exports.testBootstrap = (test) ->
+  application = app()
+  application.on 'bootstraped', -> test.done()
+  application.bootstrap()

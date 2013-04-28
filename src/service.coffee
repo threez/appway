@@ -9,51 +9,63 @@ class Service extends EventEmitter
     @dirty = new Dirty(@db_path)
     @apps = {}
   
-  list:->
+  list: (callback)->
     apps = []
     @dirty.forEach (key, value) -> apps.push(value)
-    apps
+    callback(apps)
   
-  create: (app_manifest) ->
-    unless @hasApplication(app_manifest.name)
-      @dirty.set(app_manifest.name, @enhance(app_manifest))
-      @app(app_manifest.name).bootstrap()
-      true
-    else
-      false
+  create: (app_manifest, callback) ->
+    @hasApplication app_manifest.name, (exist) =>
+      unless exist
+        @enhance app_manifest, (enhanced_manifest) =>
+          @dirty.set app_manifest.name, enhanced_manifest, (err) =>
+            throw err if err
+            @findApplication app_manifest.name, (app) ->
+              callback(app)
+      else
+        callback(false)
   
-  update: (name, app_manifest) ->
-    if @hasApplication(name)
-      @dirty.set(name, @enhance(app_manifest))
-      @app(name).bootstrap()
-      true
-    else
-      false
+  update: (name, app_manifest, callback) ->
+    @hasApplication name, (exist) =>
+      if exist
+        @enhance app_manifest, (enhanced_manifest) =>
+          @dirty.set name, enhanced_manifest, (err) =>
+            throw err if err
+            @findApplication app_manifest.name, (app) =>
+              callback(app)
+      else
+        callback(false)
 
-  destroy: (name) ->
-    if @hasApplication(name)
-      @dirty.set(name, undefined)
-      true
-    else
-      false
+  destroy: (name, callback) ->
+    @hasApplication name, (exist) =>
+      if exist
+        @dirty.set(name, undefined)
+        callback(true)
+      else
+        callback(false)
 
-  find: (name) ->
-    @dirty.get(name)
+  # callbacks with the manifest of the found application or undefined
+  findManifest: (name, callback) ->
+    callback(@dirty.get(name))
 
-  app: (name) ->
+  findApplication: (name, callback) ->
     if app = @apps[name]
-      app
+      callback(app)
     else
-      if manifest = @find(name)
-        @apps[name] = new Application(manifest)
+      @findManifest name, (manifest) =>
+        if manifest
+          callback(@apps[name] = new Application(manifest))
+        else
+          callback(undefined)
 
-  hasApplication: (name) ->
-    @find(name) != undefined
-    
-  enhance: (manifest) ->
-    mkdirp.sync(app_repo_path = @appPath manifest.name, 'repo')
-    mkdirp.sync(app_logs_path = @appPath manifest.name, 'logs')
-    
+  hasApplication: (name, callback) ->
+    @findManifest name, (manifest) ->
+      callback(manifest != undefined)
+
+  enhance: (manifest, callback) ->
+    app_repo_path = @appPath manifest.name, 'repo'
+    app_logs_path = @appPath manifest.name, 'logs'
+
     manifest['logs'] =
       install: path.join app_logs_path, 'install'
       process: path.join app_logs_path, 'process'
@@ -61,6 +73,19 @@ class Service extends EventEmitter
     manifest['repo'] ||= {}
     manifest['repo']['dir'] = app_repo_path
     manifest
+    
+    mkdirp app_logs_path, (err) ->
+      throw err if err
+      
+      mkdirp app_logs_path, (err) ->
+        throw err if err
+        
+        callback(manifest)
+  
+  bootstrap: (name, callback) ->
+    @findApplication app_manifest.name, (app) ->
+      app.bootstrap () ->
+        callback(app)
   
   appPath: (app_name, app_path) ->
     path.join @apps_path, app_name, app_path

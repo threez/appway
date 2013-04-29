@@ -58,9 +58,10 @@ class Repository extends EventEmitter
     args
 
   useLogger: (process) ->
-    process.stdout.on 'data', (data) =>
-      @logger.info data.toString()
-    process.stderr.on 'data', (data) =>
-      @logger.error data.toString()
+    if @logger
+      process.stdout.on 'data', (data) =>
+        @logger.info data.toString()
+      process.stderr.on 'data', (data) =>
+        @logger.error data.toString()
 
 exports.Repository = Repository

@@ -7,6 +7,7 @@ app = () ->
     repo:
       url: "git://github.com/rubynas/rubynas.git"
       branch: "master"
+      dir: 'test/tmp/rubynas'
     packages: [
       "ruby1.9.3"
       "ruby-bundler"

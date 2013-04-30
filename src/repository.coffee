@@ -1,5 +1,6 @@
 {EventEmitter} = require 'events'
 {spawn} = require 'child_process'
+{useLoggerForProcess} = require './log-provider'
 fs = require 'fs'
 path = require 'path'
 
@@ -22,7 +23,7 @@ class Repository extends EventEmitter
     
   pull: (callback) ->
     process = spawn 'env', @pullArgs(), cwd: @dir
-    @useLogger process
+    useLoggerForProcess process, @logger
     
     process.on 'close', (code) =>
       if code == 0
@@ -34,7 +35,7 @@ class Repository extends EventEmitter
     
   clone: (callback) ->
     process = spawn 'env', @cloneArgs()
-    @useLogger process
+    useLoggerForProcess process, @logger
     
     process.on 'close', (code) =>
       if code == 0
@@ -56,12 +57,5 @@ class Repository extends EventEmitter
     args.push @url
     args.push @dir
     args
-
-  useLogger: (process) ->
-    if @logger
-      process.stdout.on 'data', (data) =>
-        @logger.info data.toString()
-      process.stderr.on 'data', (data) =>
-        @logger.error data.toString()
 
 exports.Repository = Repository

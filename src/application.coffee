@@ -1,5 +1,7 @@
 {EventEmitter} = require 'events'
 {Repository} = require './repository'
+{Installer} = require './installer'
+{spawn} = require 'child_process'
 winston = require 'winston'
 
 class Application extends EventEmitter
@@ -16,8 +18,15 @@ class Application extends EventEmitter
 
   # 1. Install the required pakages using `apt-get`on ubuntu
   installPackages: (callback) ->
-    @emit 'packages-installed'
-    callback() if callback
+    cmds = [
+      ['apt-get', 'update'],
+      ['apt-get', 'install', @manifest.packages.join(' ')]
+    ]
+    installer = new Installer(undefined, @logger('install'))
+    installer.install cmds, (err) =>
+      throw err if err
+      @emit 'packages-installed'
+      callback() if callback
 
   # 2. Clone the git repository (git pull/clone) and start the application
   download: (callback) ->
@@ -29,8 +38,15 @@ class Application extends EventEmitter
 
   # 3. Execute the install commands
   install: (callback) ->
-    @emit 'installed'
-    callback() if callback
+    cmds = []
+    @manifest.install.forEach (cmd) ->
+      cmds.push cmd.split(/\s+/)
+
+    installer = new Installer(@manifest.repo.dir, @logger('install'))
+    installer.install cmds, (err) =>
+      throw err if err
+      @emit 'installed'
+      callback() if callback
 
   # 4. Run (execute procfile)
   start: (callback) ->

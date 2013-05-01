@@ -16,7 +16,7 @@ class Installer extends EventEmitter
   processCommand: (commands, endCallback) ->
     args = commands.shift()
     cmd = args.shift()
-    console.log("Execute: (" + cmd + ") " + args.join(' ') + " @(" + @dir + ")")
+    @logger?.info "Execute: (" + cmd + ") " + args.join(' ') + " @(" + @dir + ")"
     process = spawn cmd, args, cwd: @dir
     useLoggerForProcess process, @logger
     process.on 'close', (code) =>
@@ -26,6 +26,8 @@ class Installer extends EventEmitter
         else
           @processCommand commands, endCallback
       else
-        endCallback 'Command ' + cmd + ' failed with exit code ' + code
+        msg = 'Command ' + cmd + ' failed with exit code ' + code
+        @logger?.error msg
+        endCallback msg
 
 exports.Installer = Installer

@@ -1,6 +1,7 @@
 {Application} = require '../src/application'
 {Service} = require '../src/service'
 Tempdir = require 'temporary/lib/dir'
+path = require 'path'
 
 installer = (callback) ->
   installer = new Installer()
@@ -11,7 +12,7 @@ app = (callback) ->
   application = new Application
     name: "example"
     repo:
-      url: "git://github.com/threez/procserver-example.git"
+      url: "./example"
       branch: "master"
       dir: tmpdir.path
     packages: {}
@@ -27,7 +28,7 @@ app = (callback) ->
     scale:
       web: 2
   callback(application)
-  #() -> tmpdir.rmdir()
+  tmpdir.rmdir()
 
 appFromService = (callback) ->
   service = new Service('./test/app.db', './test/apps')

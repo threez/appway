@@ -11,12 +11,15 @@ class Procfile extends EventEmitter
     @on 'app', (name, command) =>
       @config[name] = command
 
-  parse: ->
+  parse: (callback) ->
     readFile @path, { encoding: 'utf-8' }, (err, data) =>
-      @emit 'error', err if err
+      if err
+        @emit 'error', err
+        callback(err) if callback
       for line in data.split "\n"
         if m = line.match /^([A-Za-z0-9_]+):\s*(.+)$/
           @emit 'app', m[1], m[2]
       @emit 'config', @config
+      callback(undefined, @config) if callback
 
 exports.Procfile = Procfile

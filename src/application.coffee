@@ -59,7 +59,7 @@ class Application extends EventEmitter
   start: (callback) ->
     console.log("ConfigProcfile...")
     procfile = new Procfile(path.join(@manifest.repo.dir, 'Procfile'))
-    procfile.parse (config) ->
+    procfile.parse (err, config) ->
       console.log(config)
     
     @emit 'started'

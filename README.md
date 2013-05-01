@@ -1,4 +1,4 @@
-# Procserver (DRAFT)
+# Procserver (DRAFT / WORK IN PROGRESS)
 
 The procfile server.
 
@@ -10,9 +10,9 @@ Special with this server is, that it has a build in reverse-proxy and therefore 
 
 Because the Procserver will host multiple applications on the same host it supports different types of virtual application/webserver proxying:
 
-1. **Host** based: Like `rubynas.appserver.local`
-2. **X-App** based: Like `X-App: rubynas`. This is an alternative to make requests using AJAX to multiple applications on the same host without changing the host really.
-3. **Request Path** based: Like `appserver.local/rubynas`
+1. **Host** based: Like `example.appserver.local`
+2. **X-App** based: Like `X-App: example`. This is an alternative to make requests using AJAX to multiple applications on the same host without changing the host really.
+3. **Request Path** based: Like `appserver.local/example`
 4. **Port based** based: Like `appserver.local:8001`. Actually this is not a proxy request, it is connecting to the application directly.
 
 ## Deployment
@@ -49,47 +49,29 @@ The profile-server has a restful api to install new applications and so stuff wi
 Content:
 
     {
-      name: "rubynas",
-      repo: {
-        url: "git://github.com/rubynas/rubynas.git",
-        branch: "master"
+      "name": "example",
+      "repo": {
+        "url": "git://github.com/threez/procserver-example.git",
+        "branch": "master"
       },
-      packages: [
-        "ruby1.9.3",
-        "ruby-bundler",
-        "build-essential",
-        "pkg-config",
-        "autoconf",
-        "automake",
-        "libtool",
-        "bison",
-        "ruby1.9.1-dev",
-        "libsqlite3-dev",
-        "libreadline6-dev",
-        "zlib1g-dev",
-        "libssl-dev",
-        "libyaml-dev",
-        "libxml2-dev",
-        "libxslt-dev",
-        "libc6-dev",
-        "libdb-dev",
-        "libsasl2-dev",
-        "libxslt-dev",
-        "libgdbm-dev",
-        "libffi-dev"
+      "packages": {
+        "apt-get": [
+          "build-essential",
+          "nodejs",
+          "npm"
+        ]
+      },
+      "user": "www-data",
+      "group": "www-data",
+      "domain": [
+        "^example.*",
+        "^example.local$"
       ],
-      user: "www-data",
-      group: "www-data",
-      domain: [
-        "^rubynas.*",
-        "^rubynas.local$"
+      "install": [
+        "npm install"
       ],
-      install: [
-        "bundle install --deployment --without test development",
-        "bundle exec rake assets:clean assets:precompile",
-      ],
-      scale: {
-        web: 2
+      "scale": {
+        "web": 2
       }
     }
 
@@ -119,7 +101,7 @@ For the application server itself there is a configuration directory that includ
 
 ### View logs
 
-    GET /applications/rubynas/logs/<logname>
+    GET /applications/exmaple/logs/<logname>
     
 The logname can be either:
 
@@ -129,7 +111,7 @@ The logname can be either:
   
 ### Start/Stop/Restart/Redeploy
 
-    POST /applications/rubynas/<action>
+    POST /applications/example/<action>
     
 The action can either be:
 
@@ -140,7 +122,7 @@ The action can either be:
     
 ### Undeploy the application
 
-    DELETE /applications/rubynas
+    DELETE /applications/example
 
 ### List all installed applications
 
@@ -149,18 +131,18 @@ The action can either be:
 Result:
 
     [
-      { name: "rubynas" }
+      { name: "example" }
     ]
 
 ### Inspect application configuration
 
-    GET /applications/rubynas
+    GET /applications/example
 
 This will return the configuration of the application.
 
 ### Update the configuration of a service
 
-    PUT /applications/rubynas
+    PUT /applications/example
 
 This request accepts the same input as the *Add new application* request. After changing the config, all installation steps, like with the creation of a new service take place.
 

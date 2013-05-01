@@ -5,8 +5,8 @@ fs = require 'fs'
 repo = (callback) ->
   tmpdir = new Tempdir
   config =
-    url: "git://github.com/rubynas/rubynas.git"
-    branch: "master"
+    url: 'git://github.com/threez/procserver-example.git'
+    branch: 'master'
     dir: tmpdir.path
   logger =
     info: (data) ->
@@ -16,7 +16,7 @@ repo = (callback) ->
 
 exports.testConfigruation = (test) ->
   repo (repository) ->
-    test.equal(repository.url, 'git://github.com/rubynas/rubynas.git')
+    test.equal(repository.url, 'git://github.com/threez/procserver-example.git')
     test.equal(repository.branch, 'master')
     test.done()
 
@@ -29,7 +29,7 @@ exports.testCloneArgs = (test) ->
       '-b'
       'master'
       '--'
-      'git://github.com/rubynas/rubynas.git'
+      'git://github.com/threez/procserver-example.git'
       'tmpdir'
     ]
     test.done()
@@ -42,7 +42,7 @@ exports.testCloneArgsWithoutBranch = (test) ->
       'git'
       'clone'
       '--'
-      'git://github.com/rubynas/rubynas.git'
+      'git://github.com/threez/procserver-example.git'
       'tmpdir'
     ]
     test.done()

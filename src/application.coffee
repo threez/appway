@@ -1,8 +1,10 @@
 {EventEmitter} = require 'events'
 {Repository} = require './repository'
 {Installer} = require './installer'
+{Procfile} = require './procfile'
 {spawn} = require 'child_process'
 winston = require 'winston'
+path = require 'path'
 
 class Application extends EventEmitter
   constructor: (@manifest) ->
@@ -18,13 +20,18 @@ class Application extends EventEmitter
 
   # 1. Install the required pakages using `apt-get`on ubuntu
   installPackages: (callback) ->
-    cmds = [
-      ['apt-get', 'update'],
-      ['apt-get', 'install', @manifest.packages.join(' ')]
-    ]
-    installer = new Installer(undefined, @logger('install'))
-    installer.install cmds, (err) =>
-      throw err if err
+    if packages = @manifest.packages["apt-get"]
+      cmds = [
+        ['apt-get', 'update'],
+        ['apt-get', 'install', '-y', packages.join(' ')]
+      ]
+      installer = new Installer(undefined, @logger('install'))
+      installer.install cmds, (err) =>
+        throw err if err
+        @emit 'packages-installed'
+        callback() if callback
+    else
+      @logger('install').warn 'Skipped install of packages!'
       @emit 'packages-installed'
       callback() if callback
 
@@ -50,6 +57,11 @@ class Application extends EventEmitter
 
   # 4. Run (execute procfile)
   start: (callback) ->
+    console.log("ConfigProcfile...")
+    procfile = new Procfile(path.join(@manifest.repo.dir, 'Procfile'))
+    procfile.parse (config) ->
+      console.log(config)
+    
     @emit 'started'
     callback() if callback
 

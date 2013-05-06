@@ -81,7 +81,7 @@ class Api
   # Returns the name of the application.
   # @return [String]
   name: () ->
-    "procserver-api"
+    "appway-api"
   
   # Setter for the service which manipulates the applications. The service
   # is the main object that is exposed with this api.

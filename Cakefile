@@ -6,7 +6,7 @@ task 'compile', "Build CoffeeScript source files", ->
   coffee.stderr.on 'data', (data) -> process.stderr.write data.toString()
 
 task 'server', "Build CoffeeScript source files", ->
-  coffee = spawn 'node', ['./bin/procserver']
+  coffee = spawn 'node', ['./bin/appway']
   coffee.stdout.on 'data', (data) -> process.stdout.write data.toString()
   coffee.stderr.on 'data', (data) -> process.stderr.write data.toString()
   

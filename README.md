@@ -1,4 +1,4 @@
-# Procserver (DRAFT / WORK IN PROGRESS)
+# appway (DRAFT / WORK IN PROGRESS)
 
 The procfile server.
 
@@ -8,7 +8,7 @@ The main design goal is to have a simple deployment mechanism for multiple procf
 
 Special with this server is, that it has a build in reverse-proxy and therefore has no need for something like nginx or apache. The procfile server runs as `root` and listens on port `80`.
 
-Because the Procserver will host multiple applications on the same host it supports different types of virtual application/webserver proxying:
+Because the **appway** will host multiple applications on the same host it supports different types of virtual application/webserver proxying:
 
 1. **Host** based: Like `example.appserver.local`
 2. **X-App** based: Like `X-App: example`. This is an alternative to make requests using AJAX to multiple applications on the same host without changing the host really.
@@ -51,7 +51,7 @@ Content:
     {
       "name": "example",
       "repo": {
-        "url": "git://github.com/threez/procserver-example.git",
+        "url": "git://github.com/threez/appway-example.git",
         "branch": "master"
       },
       "packages": {
@@ -97,7 +97,7 @@ This request will:
 
 Limitation: The application has no write access to the file system in the checkout folder.
 
-For the application server itself there is a configuration directory that includes all applications that should be deployed: The the directory is by default `/etc/procserver/config`.
+For the application server itself there is a configuration directory that includes all applications that should be deployed: The the directory is by default `/etc/appway/config`.
 
 ### View logs
 

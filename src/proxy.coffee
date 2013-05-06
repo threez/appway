@@ -29,11 +29,7 @@ class Proxy
     @server = httpProxy.createServer (req, res, proxy) =>
       # Proxy using app name (Header)
       if appName = req.headers[@appHeader]
-        if ports = @apps[appName]
-          @loadBalancer[appName] += 1
-          port = ports[@loadBalancer[appName] % ports.length]
-
-          console.log "proxy to #{appName}:#{port}"
+        if port = @portForApp(appName)
           # redirect to the application
           proxy.proxyRequest req, res,
             host: @localhost
@@ -44,6 +40,12 @@ class Proxy
       else
         # No app passed
         @clientError res, "Error: Need to pass the 'X-App' Header"
+
+  portForApp: (appName) ->
+    if ports = @apps[appName]
+      @loadBalancer[appName] += 1
+      port = ports[@loadBalancer[appName] % ports.length]
+      port
 
   # Register the application and start it so that the proxy can start proxying
   # requests to it.

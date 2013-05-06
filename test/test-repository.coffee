@@ -16,13 +16,13 @@ repo = (callback) ->
 
 exports.testConfigruation = (test) ->
   repo (repository) ->
-    test.equal(repository.url, "./example")
-    test.equal(repository.branch, 'master')
+    test.equal(repository.config.url, "./example")
+    test.equal(repository.config.branch, 'master')
     test.done()
 
 exports.testCloneArgs = (test) ->
   repo (repository, tmppath) ->
-    repository.dir = 'tmpdir'
+    repository.config.dir = 'tmpdir'
     test.deepEqual repository.cloneArgs(), [
       'git'
       'clone'
@@ -36,8 +36,8 @@ exports.testCloneArgs = (test) ->
 
 exports.testCloneArgsWithoutBranch = (test) ->
   repo (repository, tmppath) ->
-    repository.dir = 'tmpdir'
-    repository.branch = null
+    repository.config.dir = 'tmpdir'
+    repository.config.branch = null
     test.deepEqual repository.cloneArgs(), [
       'git'
       'clone'

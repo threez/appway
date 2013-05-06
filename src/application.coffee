@@ -9,16 +9,21 @@ path = require 'path'
 class Application extends EventEmitter
   constructor: (@manifest) ->
     @loggers = {}
-
-  bootstrap: (callback) ->
+  
+  name: () ->
+    @manifest.name
+    
+  dir: () ->
+    @manifest.repo.dir
+    
+  deploy: (callback) ->
     @installPackages () =>
       @download () =>
         @install () =>
-          @start () =>
-            @emit 'bootstraped'
-            callback() if callback
+          @emit 'deployed'
+          callback() if callback
 
-  # 1. Install the required pakages using `apt-get`on ubuntu
+  # 1. Install the required pakages using `apt-get` on ubuntu
   installPackages: (callback) ->
     if packages = @manifest.packages["apt-get"]
       cmds = [
@@ -54,20 +59,6 @@ class Application extends EventEmitter
       throw err if err
       @emit 'installed'
       callback() if callback
-
-  # 4. Run (execute procfile)
-  start: (callback) ->
-    console.log("ConfigProcfile...")
-    procfile = new Procfile(path.join(@manifest.repo.dir, 'Procfile'))
-    procfile.parse (err, config) ->
-      console.log(config)
-    
-    @emit 'started'
-    callback() if callback
-
-  stop: (callback) ->
-    @emit 'stopped'
-    callback() if callback
 
   # Returns the path to the log with the passed name
   # @param [String] context the name might be install, process, error

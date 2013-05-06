@@ -37,18 +37,3 @@ appFromService = (callback) ->
 exports.testApplication = (test) ->
   app (application) ->
     test.done()
-
-# exports.testStart = (test) ->
-#   app (application) ->
-#     application.on 'started', -> test.done()
-#     application.start()
-# 
-# exports.testStop = (test) ->
-#   app (application) ->
-#     application.on 'stopped', -> test.done()
-#     application.stop()
-
-exports.testBootstrap = (test) ->
-  app (application) ->
-    application.on 'bootstraped', -> test.done()
-    application.bootstrap()

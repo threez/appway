@@ -5,8 +5,11 @@ path = require 'path'
 mkdirp = require 'mkdirp'
 
 class Service extends EventEmitter
-  constructor: (@db_path, @apps_path) ->
+  constructor: (@db_path, @apps_path, callback) ->
     @dirty = new Dirty(@db_path)
+    @dirty.on 'load', () =>
+      @emit 'ready'
+      callback() if callback
     @apps = {}
   
   list: (callback)->
@@ -57,6 +60,12 @@ class Service extends EventEmitter
           callback(@apps[name] = new Application(manifest))
         else
           callback(undefined)
+  
+  allApplications: (callback) ->
+    if callback
+      @dirty.forEach (name, manifest) =>
+        @findApplication name, (app) =>
+          callback(app)
 
   hasApplication: (name, callback) ->
     @findManifest name, (manifest) ->

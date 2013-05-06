@@ -1,12 +1,8 @@
 #!/usr/bin/env node
 
 var path = require('path');
-var fs   = require('fs');
-var lib  = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
+var fs = require('fs');
+var currentDir = path.dirname(fs.realpathSync(__filename));
+var app = require(path.join(currentDir, '../lib'));
 
-var Api = require(lib + '/api').Api;
-var port = 8000;
-
-api = new Api();
-api.app.listen(port);
-console.log("Started procserver on port", port);
+app.boot(8000, "./tmp/app.db", "./tmp/apps");

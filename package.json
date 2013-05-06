@@ -5,11 +5,12 @@
   "author": "Vincent Landgraf <setcool@gmx.de>",
   "dependencies": {
     "express": "3.1.x",
-    "bouncy": "3.1.x",
     "send": "0.1.x",
     "winston": "0.6.x",
     "dirty": "0.9.x",
-    "mkdirp": "0.3.5"
+    "mkdirp": "0.3.5",
+    "forever-monitor": "1.1.0",
+    "http-proxy": "0.10.2"
   },
   "devDependencies" : {
     "coffee-script" : "1.1.x",

@@ -1,71 +1,102 @@
 {Service} = require './service'
+{ProcessManager} = require './process-manager'
 express = require 'express'
 send = require 'send'
 
 class Api
   constructor: () ->
-    @service = new Service("./app.db", "./apps")
     @app = express()
-
-    @app.use(express.logger('dev')) # 'default', 'short', 'tiny', 'dev'
-    @app.use(express.bodyParser())
+    @app.use express.logger('dev') # 'default', 'short', 'tiny', 'dev'
+    @app.use express.bodyParser()
 
     @app.get '/applications', (req, res) =>
-      res.json @service.list()
+      @service.list (list) ->
+        res.json list
 
     @app.post '/applications', (req, res) =>
-      console.log(req.body)
-      if @service.create(req.body)
-        res.send(200)
-      else
-        res.send(409, error: 'Conflict, the applications already exists')
+      @service.create req.body, (app) =>
+        if app
+          @processManager.redeploy app, (result) ->
+            res.send(200) # TODO: react to result
+        else
+          res.send(409, error: 'Conflict, the applications already exists')
 
     @app.get '/applications/:name', (req, res) =>
-      if app = @service.find(req.params.name)
-        res.json app
-      else
-        res.send(404, error: 'The application is not defined')
+      @service.findManifest req.params.name, (manifest) ->
+        if manifest
+          res.json manifest
+        else
+          res.send(404, error: 'The application is not defined')
 
     @app.put '/applications/:name', (req, res) =>
-      if @service.update(req.params.name, req.body)
-        res.send(200)
-      else
-        res.send(404, error: 'The application is not defined')
+      @service.update req.params.name, req.body, (app) =>
+        if app
+          @processManager.redeploy app, (result) ->
+            res.send(200) # TODO: react to result
+        else
+          res.send(404, error: 'The application is not defined')
 
     @app.del '/applications/:name', (req, res) =>
-      if @service.destroy(req.params.name)
-        res.send(200)
-      else
-        res.send(404, error: 'The application is not defined')
+      @service.destroy req.params.name, (result) =>
+        if result
+          res.send(200)
+        else
+          res.send(404, error: 'The application is not defined')
 
     @app.get '/applications/:name/logs/:log', (req, res) =>
-      if app = @service.app(req.params.name)
+      @findApplication req, res, (app) =>
         send(req, app.log(req.params.log)).pipe(res)
-      else
-        res.send(404, error: 'The application is not defined')
 
     @app.post '/applications/:name/start', (req, res) =>
-      if app = @service.app(req.params.name)
-        res.json = app.start
-      else
-        res.send(404, error: 'The application is not defined')
+      @findApplication req, res, (app) =>
+        @processManager.start app, (result) ->
+          res.send(200) # TODO: react to result
 
     @app.post '/applications/:name/restart', (req, res) =>
-      if app = @service.app(req.params.name)
-        res.json app.restart
-      else
-        res.send(404, error: 'The application is not defined')
+      @findApplication req, res, (app) =>
+        @processManager.restart app, (result) ->
+          res.send(200) # TODO: react to result
 
     @app.post '/applications/:name/stop', (req, res) =>
-      if app = @service.app(req.params.name)
-        res.json app.stop
-      else
-        res.send(404, error: 'The application is not defined')
+      @findApplication req, res, (app) =>
+        @processManager.stop app, (result) ->
+          res.send(200) # TODO: react to result
 
     @app.post '/applications/:name/redeploy', (req, res) =>
-      if app = @service.app(req.params.name)
-        res.json app.redeploy
+      @findApplication req, res, (app) =>
+        @processManager.redeploy app, (result) ->
+          res.send(200) # TODO: react to result
+
+  # Checks if the application exists
+  # @param [HttpRequest] req
+  # @param [HttpResponse] res
+  # @param [Function] callback
+  findApplication: (req, res, callback) ->
+    @service.findApplication req.params.name, (app) =>
+      if app
+        callback(app)
       else
         res.send(404, error: 'The application is not defined')
-
+  
+  # Returns the name of the application.
+  # @return [String]
+  name: () ->
+    "procserver-api"
+  
+  # Setter for the service which manipulates the applications. The service
+  # is the main object that is exposed with this api.
+  # @param [Service] service
+  setService: (@service) ->
+  
+  # Setter for the process manager, that is used to deploy and start the
+  # application
+  # @param [ProcessManager] processManager
+  setProcessManager: (@processManager) ->
+  
+  # Start the application api on passed port and host.
+  # @param [Integer] port
+  # @port [String] host e.g. '0.0.0.0'
+  listen: (port, host) ->
+    @app.listen(port, host)
+    
 exports.Api = Api

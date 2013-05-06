@@ -1,6 +1,7 @@
 # appway (DRAFT / WORK IN PROGRESS)
 
-The procfile server.
+The procfile server. [![Travis-CI Build Status](https://secure.travis-ci.org/threez/appway.png)](https://secure.travis-ci.org/threez/appway)
+
 
 The proserver is inspired by heroku a deployment mechanism and is designed for rubynas but may also work for others.
 

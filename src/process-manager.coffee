@@ -24,7 +24,7 @@ path = require 'path'
 # * How to address different processes inside a application?
 #
 class ProcessManager
-  constructor: (@service, @basePort) ->
+  constructor: () ->
     @processes = {}
 
   # Setter to configure the proxy that should be used to host the application.
@@ -60,8 +60,11 @@ class ProcessManager
             processName = "#{category}.#{scale}"
           
             process = new Process(app, processName, cmd)
-            console.log("Start app #{process.name()}")
-            console.log(cmd)
+            log.info "Start app #{process.name()}",
+              app: app.name()
+            log.debug "Execute",
+              cmd: cmd,
+              app: app.name()
         
             # start the process depending on the type, web will be treated as
             # web application server, the rest will not have a port.
@@ -83,7 +86,8 @@ class ProcessManager
     processCount = Object.keys(processList).length
     
     for name, process of processList
-      console.log "Stop app #{process.name()}"
+      log.info "Stop app #{process.name()}",
+        app: app.name()
       process.stop () =>
         processCount -= 1
         

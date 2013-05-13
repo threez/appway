@@ -54,7 +54,8 @@ class Proxy
   registerApp: (name, app) ->
     port = @registerPort(name, app)
     app.listen(port, @localhost)
-    console.log "Started app '#{app.name()}' on #{@localhost}:#{port}"
+    log.info "Started app '#{app.name()}' on #{@localhost}:#{port}",
+      app: app.name()
 
   # Register the application and find a free port for it.
   # @param [String] name
@@ -87,18 +88,20 @@ class Proxy
     @apps[name] = @apps[name].slice(0, index).concat(
       @apps[name].slice(index + 1, @apps[name].length))
     
-    console.log "Removed app '#{app.name()}' from #{@localhost}:#{app.port}"
+    log.info "Removed app '#{app.name()}' from #{@localhost}:#{app.port}",
+      app: app.name()
     
     # remove the whole app if there is no more port for the app
     if @apps[name].length == 0
       delete @apps[name]
       delete @loadBalancer[name]
-      console.log "Removed app #{name} completely"
+      log.info "Removed app #{name} completely",
+        app: app.name()
     
   # Starts the http proxy server
   listen: (port) ->
     @server.listen(port, @global)
-    console.log("Started proxy on #{@global}:#{port}")
+    log.info "Started proxy on #{@global}:#{port}"
 
   # Respond to a client error with the passed message
   clientError: (res, errorText) ->

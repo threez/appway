@@ -24,21 +24,41 @@ class Process extends EventEmitter
       spawnWith:
         setuid: @user
         setgid: @group
-        
-    @child.on 'exit', () =>
+        stdio: ['ignore', 'pipe', 'pipe']
+  
+    @child.on 'exit', (data) =>
+      log.debug "Process exited with code: #{1}", @metadata
       @emit 'exit', @
-      
-    @child.on 'error', (data) =>
-      console.log(data)
-      
-    @child.start()
     
-    @emit 'started', @chil
-    callback(@child) if callback
+    @child.on 'error', (data) =>
+      log.error data.toString(), @metadata
+
+    @child.on 'start', (process) =>
+      @metadata =
+        port: @port
+        pid: process.child.pid
+        app: @name()
+      
+      process.child.on 'data', (data) =>
+        log.info data.toString(), @metadata
+
+      process.child.stdout.on 'data', (data) =>
+        log.info data.toString(), @metadata
+
+      process.child.stderr.on 'data', (data) =>
+        log.error data.toString(), @metadata
+        
+      log.debug "Process started", @metadata
+      
+      @emit 'started', @child
+      callback(@child) if callback
+    
+    @child.start()
 
   stop: (callback) ->
     @child.stop()
     @emit 'stopped'
+    log.debug "Stop process", @metadata
     callback() if callback
 
   listen: (port, host) ->

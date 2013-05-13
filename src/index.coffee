@@ -2,8 +2,15 @@
 {Service} = require './service'
 {ProcessManager} = require './process-manager'
 {Proxy} = require './proxy'
+winston = require 'winston'
 
-exports.boot = (port, appDbPath, appPath) ->
+exports.boot = (port, appDbPath, appPath, logFile) ->
+  global.log = new winston.Logger
+    transports: [
+      new winston.transports.File(filename: logFile),
+      new winston.transports.Console(colorize: true, timestamp: true)
+    ]
+  
   service = new Service appDbPath, appPath, () ->
     api = new Api()
     proxy = new Proxy()
@@ -22,7 +29,8 @@ exports.boot = (port, appDbPath, appPath) ->
   
     # start all applications
     service.allApplications (app) ->
-      console.log("start app: " + app.name())
+      log.info "start app: " + app.name(),
+        app: app.name()
       processManager.redeploy app
   
     # start the porxy itself

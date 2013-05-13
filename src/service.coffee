@@ -57,7 +57,7 @@ class Service extends EventEmitter
     else
       @findManifest name, (manifest) =>
         if manifest
-          callback(@apps[name] = new Application(manifest))
+          callback(@apps[name] = new Application(manifest, @log))
         else
           callback(undefined)
   
@@ -72,31 +72,19 @@ class Service extends EventEmitter
       callback(manifest != undefined)
 
   enhance: (manifest, callback) ->
-    app_repo_path = @appPath manifest.name, 'repo'
-    app_logs_path = @appPath manifest.name, 'logs'
+    app_repo_path= path.join @apps_path, manifest.name
 
-    manifest['logs'] =
-      install: path.join app_logs_path, 'install'
-      process: path.join app_logs_path, 'process'
-      error: path.join app_logs_path, 'error'
     manifest['repo'] ||= {}
     manifest['repo']['dir'] = app_repo_path
     manifest
     
-    mkdirp app_logs_path, (err) ->
+    mkdirp app_repo_path, (err) ->
       throw err if err
-      
-      mkdirp app_logs_path, (err) ->
-        throw err if err
-        
-        callback(manifest)
+      callback(manifest)
   
   bootstrap: (name, callback) ->
     @findApplication app_manifest.name, (app) ->
       app.bootstrap () ->
         callback(app)
-  
-  appPath: (app_name, app_path) ->
-    path.join @apps_path, app_name, app_path
     
 exports.Service = Service

@@ -3,12 +3,10 @@
 {Installer} = require './installer'
 {Procfile} = require './procfile'
 {spawn} = require 'child_process'
-winston = require 'winston'
 path = require 'path'
 
 class Application extends EventEmitter
   constructor: (@manifest) ->
-    @loggers = {}
   
   name: () ->
     @manifest.name
@@ -30,19 +28,20 @@ class Application extends EventEmitter
         ['apt-get', 'update'],
         ['apt-get', 'install', '-y', packages.join(' ')]
       ]
-      installer = new Installer(undefined, @logger('install'))
+      installer = new Installer(undefined, log, @)
       installer.install cmds, (err) =>
         throw err if err
         @emit 'packages-installed'
         callback() if callback
     else
-      @logger('install').warn 'Skipped install of packages!'
+      log.warn 'Skipped install of packages!',
+        app: @.name()
       @emit 'packages-installed'
       callback() if callback
 
   # 2. Clone the git repository (git pull/clone) and start the application
   download: (callback) ->
-    repository = new Repository(@manifest.repo, @logger('install'))
+    repository = new Repository(@manifest.repo, log, @)
     repository.sync (err) =>
       throw err if err
       @emit 'downloaded', @, repository
@@ -54,31 +53,10 @@ class Application extends EventEmitter
     @manifest.install.forEach (cmd) ->
       cmds.push cmd.split(/\s+/)
 
-    installer = new Installer(@manifest.repo.dir, @logger('install'))
+    installer = new Installer(@manifest.repo.dir, log, @)
     installer.install cmds, (err) =>
       throw err if err
       @emit 'installed'
       callback() if callback
-
-  # Returns the path to the log with the passed name
-  # @param [String] context the name might be install, process, error
-  log: (context) ->
-    if @manifest.logs?
-      @manifest.logs[context]
-
-  # Returns the logger object to use for context to use.
-  logger: (context) ->
-    if logger = @loggers[context]
-      logger
-    else
-      if @log(context)
-        @loggers[context] = new winston.Logger
-          transports: [
-            new winston.transports.Console(),
-            new winston.transports.File(filename: @log(context))
-          ]
-      else
-        @loggers[context] = new winston.Logger
-          transports: [ new winston.transports.Console() ]
 
 exports.Application = Application

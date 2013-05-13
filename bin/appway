@@ -5,4 +5,4 @@ var fs = require('fs');
 var currentDir = path.dirname(fs.realpathSync(__filename));
 var app = require(path.join(currentDir, '../lib'));
 
-app.boot(8000, "./tmp/app.db", "./tmp/apps");
+app.boot(8000, "./tmp/app.db", "./tmp/apps", "./tmp/log");

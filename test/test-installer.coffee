@@ -1,6 +1,9 @@
 {Installer} = require '../src/installer'
 Tempdir = require 'temporary/lib/dir'
 
+# logger dummy
+global.log = info: (msg) ->
+  
 installer = (callback) ->
   tmpdir = new Tempdir
   installer = new Installer(tmpdir.path)

@@ -1,10 +1,11 @@
 #!/bin/bash
 
 HOST=http://localhost:8000
+APPNAME=example
 APPWAY="X-App: appway"
 
 echo "== Delete the example app if it is already there"
-curl -X DELETE -H "$APPWAY" $HOST/applications/example
+curl -X DELETE -H "$APPWAY" $HOST/applications/$APPNAME
 echo
 sleep 1
 
@@ -19,17 +20,17 @@ echo
 sleep 1
 
 echo "== Show the example application"
-curl -H "$APPWAY" $HOST/applications/example
+curl -H "$APPWAY" $HOST/applications/$APPNAME
 echo
 sleep 1
 
 echo "== Redeploy the application"
-curl -X POST -H "$APPWAY" $HOST/applications/example/redeploy
+curl -X POST -H "$APPWAY" $HOST/applications/$APPNAME/redeploy
 echo
 sleep 1
 
 echo "== Remove the application"
-curl -X DELETE -H "$APPWAY" $HOST/applications/example
+curl -X DELETE -H "$APPWAY" $HOST/applications/$APPNAME
 echo
 sleep 1
 

@@ -42,8 +42,8 @@ class Service extends EventEmitter
   destroy: (name, callback) ->
     @hasApplication name, (exist) =>
       if exist
-        @dirty.set(name, undefined)
-        callback(true)
+        @dirty.rm name, () =>
+          callback(true)
       else
         callback(false)
 
@@ -56,7 +56,7 @@ class Service extends EventEmitter
       callback(app)
     else
       @findManifest name, (manifest) =>
-        if manifest
+        if manifest?
           callback(@apps[name] = new Application(manifest, @log))
         else
           callback(undefined)
@@ -65,7 +65,7 @@ class Service extends EventEmitter
     if callback
       @dirty.forEach (name, manifest) =>
         @findApplication name, (app) =>
-          callback(app)
+          callback(app) if app?
 
   hasApplication: (name, callback) ->
     @findManifest name, (manifest) ->

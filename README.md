@@ -100,6 +100,11 @@ Limitation: The application has no write access to the file system in the checko
 
 For the application server itself there is a configuration directory that includes all applications that should be deployed: The the directory is by default `/etc/appway/config`.
 
+#### Default application
+
+There is a special application name `default`. If the name of an application is
+`default` the X-App header doesn't need to be passed to get to the application. The application will then be used as the fallback application fall all requests if no X-App header is passed.
+
 ### View logs
 
     GET /applications/exmaple/logs/<logname>

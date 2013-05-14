@@ -25,22 +25,29 @@ class Proxy
     @apps = {}
     @appHeader = "x-app"
     @loadBalancer = {}
+    @defaultAppName = 'default'
     
     @server = httpProxy.createServer (req, res, proxy) =>
       # Proxy using app name (Header)
       if appName = req.headers[@appHeader]
-        if port = @portForApp(appName)
-          # redirect to the application
-          proxy.proxyRequest req, res,
-            host: @localhost
-            port: port
-        else
-          # App not found
-          @clientError res, "Error: app '#{appName}' don't exist!"
-      else
-        # No app passed
+        @proxyToApp(proxy, req, res, appName)
+      else if @apps[@defaultAppName]?
+        @proxyToApp(proxy, req, res, @defaultAppName)
+      else # No app passed
         @clientError res, "Error: Need to pass the 'X-App' Header"
 
+  # redirect to the application
+  proxyToApp: (proxy, req, res, appName) ->
+    if port = @portForApp(appName)
+      proxy.proxyRequest req, res,
+        host: @localhost
+        port: port
+    else # App not found
+      @clientError res, "Error: app '#{appName}' don't exist!"
+  
+  # If the passed appName is a valid app, a port with the application is
+  # returned
+  # @return [Integer, undefined]
   portForApp: (appName) ->
     if ports = @apps[appName]
       @loadBalancer[appName] += 1

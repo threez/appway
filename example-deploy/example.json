@@ -1,0 +1,24 @@
+{
+  "name": "example",
+  "repo": {
+    "url": "example",
+    "branch": "master"
+  },
+  "packages": [
+    "build-essential",
+    "nodejs",
+    "npm"
+  ],
+  "user": "www-data",
+  "group": "www-data",
+  "domain": [
+    "^example.*",
+    "^example.local$"
+  ],
+  "install": [
+    "npm install"
+  ],
+  "scale": {
+    "web": 2
+  }
+}

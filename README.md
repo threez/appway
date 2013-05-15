@@ -103,7 +103,7 @@ For the application server itself there is a configuration directory that includ
 #### Default application
 
 There is a special application name `default`. If the name of an application is
-`default` the X-App header doesn't need to be passed to get to the application. The application will then be used as the fallback application fall all requests if no X-App header is passed.
+`default` the X-App header doesn't need to be passed to get to the application. This is true if no X-App header is passed or the X-App header references an application that doesn't exist. 
 
 ### View logs
 

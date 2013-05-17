@@ -1,6 +1,6 @@
 {
   "name": "appway",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The proserver is inspired by heroku a deployment mechanism and is designed for rubynas",
   "author": "Vincent Landgraf <setcool@gmx.de>",
   "dependencies": {
